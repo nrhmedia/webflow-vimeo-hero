@@ -146,11 +146,13 @@ Webflow.push(function () {
 
   // Check for low power mode and hide elements with vimeo-hero-videos=true
   const videoElement = document.getElementById('playback-tester');
-  videoElement.addEventListener('suspend', () => {
-    $('[vimeo-hero-videos="true"]').hide();
-  });
+  function checkVideoPlayback() {
+    if (videoElement.paused) {
+      $('[vimeo-hero-videos="true"]').hide();
+    } else {
+      $('[vimeo-hero-videos="true"]').show();
+    }
+  }
 
-  videoElement.addEventListener('play', () => {
-    $('[vimeo-hero-videos="true"]').show();
-  });
+  setInterval(checkVideoPlayback, 1000); // Check every second
 });
