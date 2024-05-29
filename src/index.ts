@@ -147,7 +147,8 @@ Webflow.push(function () {
   // Check for low power mode and hide elements with vimeo-hero-videos=true
   const videoElement = document.getElementById('playback-tester');
   function checkVideoPlayback() {
-    if (videoElement.paused) {
+    const playbackQuality = videoElement.getVideoPlaybackQuality();
+    if (playbackQuality.droppedVideoFrames > 0) {
       $('[vimeo-hero-videos="true"]').hide();
     } else {
       $('[vimeo-hero-videos="true"]').show();
