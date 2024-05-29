@@ -143,4 +143,14 @@ Webflow.push(function () {
     if (backgroundPlayer) backgroundPlayer.play();
     if (effectsPlayer) effectsPlayer.play();
   }, 1000); // 1000 milliseconds = 1 second
+
+  // Check for low power mode and hide elements with vimeo-hero-videos=true
+  const videoElement = document.getElementById('playback-tester');
+  videoElement.addEventListener('suspend', () => {
+    $('[vimeo-hero-videos="true"]').hide();
+  });
+
+  videoElement.addEventListener('play', () => {
+    $('[vimeo-hero-videos="true"]').show();
+  });
 });
