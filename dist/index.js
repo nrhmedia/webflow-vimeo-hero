@@ -1,1 +1,152 @@
-"use strict";(()=>{var y=y||[];y.push(function(){let c=document.getElementById("vimeo-player");if(!c)return;let n=new Vimeo.Player(c),r=!1,s=!1;function m(){return/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream}function d(e){e.requestFullscreen?e.requestFullscreen():e.webkitRequestFullscreen?e.webkitRequestFullscreen():e.mozRequestFullScreen?e.mozRequestFullScreen():e.msRequestFullscreen&&e.msRequestFullscreen()}$('[vimeo="player-button"]').on("click touchstart",function(){var e=setInterval(function(){if($('[vimeo="player"]').is(":visible")){clearInterval(e),d(c),t&&t.getCurrentTime().then(function(u){n.setCurrentTime(u)});let o=Promise.resolve();r&&(o=o.then(function(){return new Promise(function(u){$('[vimeo="mute-button"]').click(),setTimeout(u,500)})})),s&&(o=o.then(function(){return new Promise(function(u){$('[vimeo="play-button"]').click(),setTimeout(u,500)})})),o.then(function(){n.play().then(function(){n.setVolume(1)})})}},100)});function f(){!document.fullscreenElement&&!document.webkitFullscreenElement&&$(c).is(":visible")&&($('[vimeo="exit-button"]').click(),m()||n.setVolume(0))}m()?setInterval(function(){f()},1e3):(document.addEventListener("fullscreenchange",f),document.addEventListener("webkitfullscreenchange",f));let a=document.getElementById("vimeo-background"),v=document.getElementById("vimeo-effects");var t=a?new Vimeo.Player(a):null;let i=v?new Vimeo.Player(v):null;$('[vimeo="play-button"]').on("click touchstart",function(){t&&t.play(),i&&i.play()}),$('[vimeo="pause-button"]').on("click touchstart",function(){t&&t.pause(),i&&i.pause(),s=!0}),$('[vimeo="exit-button"]').on("click touchstart",function(){t&&t.play()}),$('[vimeo="unmute-button"]').on("click touchstart",function(){t&&t.setVolume(1),r=!0}),$('[vimeo="mute-button"]').on("click touchstart",function(){t&&t.setVolume(0)}),$('[vimeo="player"]').on("click touchstart",function(){let e=Promise.resolve();r&&(e=e.then(function(){return new Promise(function(l){$('[vimeo="mute-button"]').click(),setTimeout(l,500)})})),s&&(e=e.then(function(){return new Promise(function(l){$('[vimeo="play-button"]').click(),setTimeout(l,500)})})),e.then(function(){n.play().then(function(){n.setVolume(1)})})}),setTimeout(function(){t&&t.play(),i&&i.play()},1e3)});})();
+"use strict";
+(() => {
+  // bin/live-reload.js
+  new EventSource(`${"http://localhost:3000"}/esbuild`).addEventListener("change", () => location.reload());
+
+  // src/index.ts
+  window.Webflow = window.Webflow || [];
+  window.Webflow.push(function() {
+    const iframe = document.getElementById("vimeo-player");
+    if (!iframe)
+      return;
+    const player = new Vimeo.Player(iframe);
+    let unmuteClicked = false;
+    let pauseClicked = false;
+    function isIOS() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+    function requestFullScreen(element) {
+      if (element.requestFullscreen)
+        element.requestFullscreen();
+      else if (element.webkitRequestFullscreen)
+        element.webkitRequestFullscreen();
+      else if (element.mozRequestFullScreen)
+        element.mozRequestFullScreen();
+      else if (element.msRequestFullscreen)
+        element.msRequestFullscreen();
+    }
+    $('[vimeo="player-button"]').on("click touchstart", function() {
+      var interval = setInterval(function() {
+        const vimeoPlayerElement = $('[vimeo="player"]');
+        if (vimeoPlayerElement.is(":visible")) {
+          clearInterval(interval);
+          requestFullScreen(iframe);
+          if (backgroundPlayer) {
+            backgroundPlayer.getCurrentTime().then(function(timecode) {
+              player.setCurrentTime(timecode);
+            });
+          }
+          let promise = Promise.resolve();
+          if (unmuteClicked) {
+            promise = promise.then(function() {
+              return new Promise(function(resolve) {
+                $('[vimeo="mute-button"]').click();
+                setTimeout(resolve, 500);
+              });
+            });
+          }
+          if (pauseClicked) {
+            promise = promise.then(function() {
+              return new Promise(function(resolve) {
+                $('[vimeo="play-button"]').click();
+                setTimeout(resolve, 500);
+              });
+            });
+          }
+          promise.then(function() {
+            player.play().then(function() {
+              player.setVolume(1);
+            });
+          });
+        }
+      }, 100);
+    });
+    function onExitFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && $(iframe).is(":visible")) {
+        $('[vimeo="exit-button"]').click();
+        if (!isIOS())
+          player.setVolume(0);
+      }
+    }
+    if (isIOS()) {
+      setInterval(function() {
+        onExitFullscreen();
+      }, 1e3);
+    } else {
+      document.addEventListener("fullscreenchange", onExitFullscreen);
+      document.addEventListener("webkitfullscreenchange", onExitFullscreen);
+    }
+    const backgroundIframe = document.getElementById("vimeo-background");
+    const effectsIframe = document.getElementById("vimeo-effects");
+    var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
+    const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
+    $('[vimeo="play-button"]').on("click touchstart", function() {
+      if (backgroundPlayer)
+        backgroundPlayer.play();
+      if (effectsPlayer)
+        effectsPlayer.play();
+    });
+    $('[vimeo="pause-button"]').on("click touchstart", function() {
+      if (backgroundPlayer)
+        backgroundPlayer.pause();
+      if (effectsPlayer)
+        effectsPlayer.pause();
+      pauseClicked = true;
+    });
+    $('[vimeo="exit-button"]').on("click touchstart", function() {
+      if (backgroundPlayer)
+        backgroundPlayer.play();
+    });
+    $('[vimeo="unmute-button"]').on("click touchstart", function() {
+      if (backgroundPlayer)
+        backgroundPlayer.setVolume(1);
+      unmuteClicked = true;
+    });
+    $('[vimeo="mute-button"]').on("click touchstart", function() {
+      if (backgroundPlayer)
+        backgroundPlayer.setVolume(0);
+    });
+    $('[vimeo="player"]').on("click touchstart", function() {
+      let promise = Promise.resolve();
+      if (unmuteClicked) {
+        promise = promise.then(function() {
+          return new Promise(function(resolve) {
+            $('[vimeo="mute-button"]').click();
+            setTimeout(resolve, 500);
+          });
+        });
+      }
+      if (pauseClicked) {
+        promise = promise.then(function() {
+          return new Promise(function(resolve) {
+            $('[vimeo="play-button"]').click();
+            setTimeout(resolve, 500);
+          });
+        });
+      }
+      promise.then(function() {
+        player.play().then(function() {
+          player.setVolume(1);
+        });
+      });
+    });
+    setTimeout(function() {
+      if (backgroundPlayer)
+        backgroundPlayer.play();
+      if (effectsPlayer)
+        effectsPlayer.play();
+    }, 1e3);
+    const videoElement = document.getElementById("playback-tester");
+    function checkVideoPlayback() {
+      if (videoElement.paused) {
+        $('[vimeo-hero-videos="true"]').hide();
+      } else {
+        $('[vimeo-hero-videos="true"]').show();
+      }
+    }
+    videoElement.addEventListener("pause", checkVideoPlayback);
+    videoElement.addEventListener("play", checkVideoPlayback);
+    checkVideoPlayback();
+  });
+})();
+//# sourceMappingURL=index.js.map

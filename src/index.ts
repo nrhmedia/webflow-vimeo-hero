@@ -1,5 +1,5 @@
-var Webflow = Webflow || [];
-Webflow.push(function () {
+window.Webflow = window.Webflow || [];
+window.Webflow.push(function () {
   const iframe = document.getElementById('vimeo-player');
   if (!iframe) return;
 
