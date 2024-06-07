@@ -7,9 +7,11 @@
   window.Webflow = window.Webflow || [];
   window.Webflow.push(function() {
     const iframe = document.getElementById("vimeo-player");
-    if (!iframe)
+    const backgroundIframe = document.getElementById("vimeo-background");
+    if (!iframe || !backgroundIframe)
       return;
     const player = new Vimeo.Player(iframe);
+    const backgroundPlayer = new Vimeo.Player(backgroundIframe);
     let unmuteClicked = false;
     let pauseClicked = false;
     function isIOS() {
@@ -76,9 +78,7 @@
       document.addEventListener("fullscreenchange", onExitFullscreen);
       document.addEventListener("webkitfullscreenchange", onExitFullscreen);
     }
-    const backgroundIframe = document.getElementById("vimeo-background");
     const effectsIframe = document.getElementById("vimeo-effects");
-    var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
     const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
     $('[vimeo="play-button"]').on("click touchstart", function() {
       if (backgroundPlayer)
@@ -136,6 +136,16 @@
       if (effectsPlayer)
         effectsPlayer.play();
     }, 1e3);
+    function checkBackgroundVideo() {
+      backgroundPlayer.getPaused().then(function(paused) {
+        if (paused) {
+          $('[vimeo-fallback="true"]').show();
+        } else {
+          $('[vimeo-fallback="true"]').hide();
+        }
+      });
+    }
+    setInterval(checkBackgroundVideo, 1e3);
     const videoElement = document.getElementById("playback-tester");
     function checkVideoPlayback() {
       if (videoElement.paused) {
