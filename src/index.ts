@@ -1,11 +1,9 @@
-window.Webflow = window.Webflow || [];
-window.Webflow.push(function () {
+var Webflow = Webflow || [];
+Webflow.push(function () {
   const iframe = document.getElementById('vimeo-player');
-  const backgroundIframe = document.getElementById('vimeo-background');
-  if (!iframe || !backgroundIframe) return;
+  if (!iframe) return;
 
   const player = new Vimeo.Player(iframe);
-  const backgroundPlayer = new Vimeo.Player(backgroundIframe);
   let unmuteClicked = false;
   let pauseClicked = false;
 
@@ -82,7 +80,10 @@ window.Webflow.push(function () {
     document.addEventListener('webkitfullscreenchange', onExitFullscreen);
   }
 
+  const backgroundIframe = document.getElementById('vimeo-background');
   const effectsIframe = document.getElementById('vimeo-effects');
+
+  var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
   const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
 
   $('[vimeo="play-button"]').on('click touchstart', function () {
@@ -142,35 +143,4 @@ window.Webflow.push(function () {
     if (backgroundPlayer) backgroundPlayer.play();
     if (effectsPlayer) effectsPlayer.play();
   }, 1000); // 1000 milliseconds = 1 second
-
-  // Check if the background video is playing and toggle vimeo-fallback visibility
-  function checkBackgroundVideo() {
-    backgroundPlayer.getPaused().then(function (paused) {
-      if (paused) {
-        $('[vimeo-fallback="true"]').show();
-      } else {
-        $('[vimeo-fallback="true"]').hide();
-      }
-    });
-  }
-
-  // Set an interval to check the background video playback status
-  setInterval(checkBackgroundVideo, 1000); // Check every second
-
-  // Check for low power mode and hide elements with vimeo-hero-videos=true
-  const videoElement = document.getElementById('playback-tester');
-
-  function checkVideoPlayback() {
-    if (videoElement.paused) {
-      $('[vimeo-hero-videos="true"]').hide();
-    } else {
-      $('[vimeo-hero-videos="true"]').show();
-    }
-  }
-
-  videoElement.addEventListener('pause', checkVideoPlayback);
-  videoElement.addEventListener('play', checkVideoPlayback);
-
-  // Initial check in case the video is already paused or playing
-  checkVideoPlayback();
 });
