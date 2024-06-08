@@ -82,6 +82,7 @@ Webflow.push(function () {
 
   const backgroundIframe = document.getElementById('vimeo-background');
   const effectsIframe = document.getElementById('vimeo-effects');
+  const fallbackElement = document.querySelector("[vimeo-fallback=true]");
 
   var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
   const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
@@ -146,23 +147,20 @@ Webflow.push(function () {
 
   // Function to check if the video is playing
   function checkVideoPlaying() {
-    if (backgroundPlayer) {
-      backgroundPlayer
-        .getPaused()
-        .then(function (paused) {
-          if (!paused) {
-            // Video is playing
-            document.querySelector('[vimeo-fallback=true]').style.display = 'none';
-          } else {
-            // Video is not playing
-            document.querySelector('[vimeo-fallback=true]').style.display = 'block';
-          }
-        })
-        .catch(function (error) {
-          console.error('Error checking video status:', error);
-          // Fallback in case of error
-          document.querySelector('[vimeo-fallback=true]').style.display = 'block';
-        });
+    if (backgroundPlayer && fallbackElement) {
+      backgroundPlayer.getPaused().then(function (paused) {
+        if (!paused) {
+          // Video is playing
+          fallbackElement.style.display = "none";
+        } else {
+          // Video is not playing
+          fallbackElement.style.display = "block";
+        }
+      }).catch(function (error) {
+        console.error('Error checking video status:', error);
+        // Fallback in case of error
+        fallbackElement.style.display = "block";
+      });
     }
   }
 
