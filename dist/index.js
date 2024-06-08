@@ -136,6 +136,22 @@
       if (effectsPlayer)
         effectsPlayer.play();
     }, 1e3);
+    function checkVideoPlaying() {
+      if (backgroundPlayer) {
+        backgroundPlayer.getPaused().then(function(paused) {
+          if (!paused) {
+            document.querySelector("[vimeo-fallback=true]").style.display = "none";
+          } else {
+            document.querySelector("[vimeo-fallback=true]").style.display = "block";
+          }
+        }).catch(function(error) {
+          console.error("Error checking video status:", error);
+          document.querySelector("[vimeo-fallback=true]").style.display = "block";
+        });
+      }
+    }
+    setTimeout(checkVideoPlaying, 1e3);
+    setInterval(checkVideoPlaying, 5e3);
   });
 })();
 //# sourceMappingURL=index.js.map

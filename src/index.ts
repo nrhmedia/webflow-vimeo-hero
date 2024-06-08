@@ -143,4 +143,32 @@ Webflow.push(function () {
     if (backgroundPlayer) backgroundPlayer.play();
     if (effectsPlayer) effectsPlayer.play();
   }, 1000); // 1000 milliseconds = 1 second
+
+  // Function to check if the video is playing
+  function checkVideoPlaying() {
+    if (backgroundPlayer) {
+      backgroundPlayer
+        .getPaused()
+        .then(function (paused) {
+          if (!paused) {
+            // Video is playing
+            document.querySelector('[vimeo-fallback=true]').style.display = 'none';
+          } else {
+            // Video is not playing
+            document.querySelector('[vimeo-fallback=true]').style.display = 'block';
+          }
+        })
+        .catch(function (error) {
+          console.error('Error checking video status:', error);
+          // Fallback in case of error
+          document.querySelector('[vimeo-fallback=true]').style.display = 'block';
+        });
+    }
+  }
+
+  // Initial check after a delay to account for video load time
+  setTimeout(checkVideoPlaying, 1000);
+
+  // Set an interval to periodically check the video status
+  setInterval(checkVideoPlaying, 5000); // Check every 5 seconds
 });
