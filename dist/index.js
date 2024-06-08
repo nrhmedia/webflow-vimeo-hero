@@ -38,11 +38,14 @@
       if (!backgroundPlayer)
         return;
       backgroundPlayer.getPaused().then(function(paused) {
+        console.log("Video paused:", paused);
         if (paused) {
           $('[vimeo-fallback="true"]').css("display", "block");
         } else {
           $('[vimeo-fallback="true"]').css("display", "none");
         }
+      }).catch(function(error) {
+        console.error("Error checking playback status:", error);
       });
     }
     if (isIOS()) {
