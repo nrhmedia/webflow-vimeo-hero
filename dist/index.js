@@ -78,9 +78,25 @@
     }
     const backgroundIframe = document.getElementById("vimeo-background");
     const effectsIframe = document.getElementById("vimeo-effects");
-    const fallbackElement = $('[vimeo-fallback="true"]');
+    const fallbackElement = document.querySelector('[vimeo-fallback="true"]');
     var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
     const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
+    if (backgroundPlayer) {
+      backgroundPlayer.on("play", function() {
+        fallbackElement.style.display = "none";
+      });
+      backgroundPlayer.on("pause", function() {
+        fallbackElement.style.display = "block";
+      });
+      backgroundPlayer.on("ended", function() {
+        fallbackElement.style.display = "block";
+      });
+      backgroundPlayer.getPaused().then(function(paused) {
+        if (!paused) {
+          fallbackElement.style.display = "none";
+        }
+      });
+    }
     $('[vimeo="play-button"]').on("click touchstart", function() {
       if (backgroundPlayer)
         backgroundPlayer.play();
@@ -137,20 +153,6 @@
       if (effectsPlayer)
         effectsPlayer.play();
     }, 1e3);
-    function checkBackgroundVideoStatus() {
-      if (backgroundPlayer) {
-        backgroundPlayer.getPaused().then(function(paused) {
-          if (paused) {
-            fallbackElement.show();
-          } else {
-            fallbackElement.hide();
-          }
-        }).catch(function(error) {
-          console.error("Error checking background video status:", error);
-        });
-      }
-    }
-    setInterval(checkBackgroundVideoStatus, 1e3);
   });
 })();
 //# sourceMappingURL=index.js.map

@@ -82,10 +82,31 @@ Webflow.push(function () {
 
   const backgroundIframe = document.getElementById('vimeo-background');
   const effectsIframe = document.getElementById('vimeo-effects');
-  const fallbackElement = $('[vimeo-fallback="true"]');
+  const fallbackElement = document.querySelector('[vimeo-fallback="true"]');
 
   var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
   const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
+
+  if (backgroundPlayer) {
+    backgroundPlayer.on('play', function () {
+      fallbackElement.style.display = 'none';
+    });
+
+    backgroundPlayer.on('pause', function () {
+      fallbackElement.style.display = 'block';
+    });
+
+    backgroundPlayer.on('ended', function () {
+      fallbackElement.style.display = 'block';
+    });
+
+    // Ensure fallback is hidden initially if the video is playing
+    backgroundPlayer.getPaused().then(function (paused) {
+      if (!paused) {
+        fallbackElement.style.display = 'none';
+      }
+    });
+  }
 
   $('[vimeo="play-button"]').on('click touchstart', function () {
     if (backgroundPlayer) backgroundPlayer.play();
@@ -144,24 +165,4 @@ Webflow.push(function () {
     if (backgroundPlayer) backgroundPlayer.play();
     if (effectsPlayer) effectsPlayer.play();
   }, 1000); // 1000 milliseconds = 1 second
-
-  // Periodically check if the background video is playing and update the fallback element visibility
-  function checkBackgroundVideoStatus() {
-    if (backgroundPlayer) {
-      backgroundPlayer
-        .getPaused()
-        .then(function (paused) {
-          if (paused) {
-            fallbackElement.show();
-          } else {
-            fallbackElement.hide();
-          }
-        })
-        .catch(function (error) {
-          console.error('Error checking background video status:', error);
-        });
-    }
-  }
-
-  setInterval(checkBackgroundVideoStatus, 1000); // Check every second
 });
