@@ -82,33 +82,9 @@ Webflow.push(function () {
 
   const backgroundIframe = document.getElementById('vimeo-background');
   const effectsIframe = document.getElementById('vimeo-effects');
-  const fallbackElement = document.querySelector('[vimeo-fallback="true"]');
 
   var backgroundPlayer = backgroundIframe ? new Vimeo.Player(backgroundIframe) : null;
   const effectsPlayer = effectsIframe ? new Vimeo.Player(effectsIframe) : null;
-
-  function checkVideoPlaying() {
-    if (backgroundPlayer) {
-      backgroundPlayer
-        .getCurrentTime()
-        .then(function (time1) {
-          setTimeout(function () {
-            backgroundPlayer.getCurrentTime().then(function (time2) {
-              if (time1 === time2) {
-                fallbackElement.style.display = 'block';
-              } else {
-                fallbackElement.style.display = 'none';
-              }
-            });
-          }, 1000); // Check again after 1 second
-        })
-        .catch(function (error) {
-          console.error('Error checking background video status:', error);
-        });
-    }
-  }
-
-  setInterval(checkVideoPlaying, 2000); // Check every 2 seconds
 
   $('[vimeo="play-button"]').on('click touchstart', function () {
     if (backgroundPlayer) backgroundPlayer.play();
