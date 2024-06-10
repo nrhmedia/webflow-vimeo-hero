@@ -168,8 +168,10 @@ Webflow.push(function () {
   }
 
   // Initial check after a delay to account for video load time
-  setTimeout(checkVideoPlaying, 1000);
+  const initialDelay = fallbackElement.getAttribute('fallback-time-initial') || 1000;
+  setTimeout(checkVideoPlaying, initialDelay);
 
   // Set an interval to periodically check the video status
-  setInterval(checkVideoPlaying, 5000); // Check every 5 seconds
+  const intervalTime = fallbackElement.getAttribute('fallback-time-interval') || 5000;
+  setInterval(checkVideoPlaying, intervalTime); // Check every 5 seconds
 });
