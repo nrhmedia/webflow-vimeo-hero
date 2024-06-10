@@ -171,7 +171,9 @@ Webflow.push(function () {
   const initialDelay = fallbackElement.getAttribute('fallback-time-initial') || 1000;
   setTimeout(checkVideoPlaying, initialDelay);
 
-  // Set an interval to periodically check the video status
-  const intervalTime = fallbackElement.getAttribute('fallback-time-interval') || 5000;
-  setInterval(checkVideoPlaying, intervalTime); // Check every 5 seconds
+  // Set an interval to periodically check the video status if interval is specified
+  const intervalTime = fallbackElement.getAttribute('fallback-time-interval');
+  if (intervalTime) {
+    setInterval(checkVideoPlaying, intervalTime);
+  }
 });
